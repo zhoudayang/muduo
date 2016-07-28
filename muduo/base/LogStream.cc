@@ -25,6 +25,7 @@ namespace detail
 
 const char digits[] = "9876543210123456789";
 const char* zero = digits + 9;
+//因为还有一个'/0'终止符，所以实际长度是字符串的长度加上1
 BOOST_STATIC_ASSERT(sizeof(digits) == 20);
 
 const char digitsHex[] = "0123456789ABCDEF";
