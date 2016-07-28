@@ -173,10 +173,11 @@ class LogStream : boost::noncopyable
   void formatInteger(T);
 
   Buffer buffer_;
-
+ // 最大数字长度
   static const int kMaxNumericSize = 32;
 };
 
+//用于存储数字转换成的字符串
 class Fmt // : boost::noncopyable
 {
  public:
