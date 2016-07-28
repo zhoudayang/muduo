@@ -51,7 +51,7 @@ size_t convert(char buf[], T value)
   }
   *p = '\0';
   std::reverse(buf, p);
-
+  //返回字符串的长度
   return p - buf;
 }
 
@@ -68,6 +68,7 @@ size_t convertHex(char buf[], uintptr_t value)
   } while (i != 0);
 
   *p = '\0';
+  // reverse between [buf,p),so '\0' is still the last element
   std::reverse(buf, p);
 
   return p - buf;
