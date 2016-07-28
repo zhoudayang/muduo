@@ -24,13 +24,16 @@ class FixedBuffer : boost::noncopyable
 {
  public:
   FixedBuffer()
+  //使用char数组的头指针初始化cur_
     : cur_(data_)
   {
+   //设置函数指针
     setCookie(cookieStart);
   }
 
   ~FixedBuffer()
   {
+   // 设置函数指针
     setCookie(cookieEnd);
   }
 
