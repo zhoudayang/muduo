@@ -71,12 +71,15 @@ class StringArg // copyable
   const char* c_str() const { return str_; }
 
  private:
+ //统一成const char *
   const char* str_;
 };
 
 class StringPiece {
  private:
+ //指向字符串的const char * 指针
   const char*   ptr_;
+  //字符串的长度
   int           length_;
 
  public:
@@ -88,6 +91,7 @@ class StringPiece {
   StringPiece(const char* str)
     : ptr_(str), length_(static_cast<int>(strlen(ptr_))) { }
   StringPiece(const unsigned char* str)
+    // 利用reinterpret_cast<> 将const unsigned char * 转换为 const char * 类型的指针
     : ptr_(reinterpret_cast<const char*>(str)),
       length_(static_cast<int>(strlen(ptr_))) { }
   StringPiece(const string& str)
@@ -138,6 +142,7 @@ class StringPiece {
             (memcmp(ptr_, x.ptr_, length_) == 0));
   }
   bool operator!=(const StringPiece& x) const {
+   //利用上面定义的==重载函数来判断
     return !(*this == x);
   }
 
