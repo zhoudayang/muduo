@@ -37,9 +37,9 @@ FileUtil::AppendFile::~AppendFile()
 
 void FileUtil::AppendFile::append(const char* logline, const size_t len)
 {
-  size_t n = write(logline, len);
-  size_t remain = len - n;
-  while (remain > 0)
+  size_t n = write(logline, len);//return size that write to file 
+  size_t remain = len - n;// remain size need to write to file 
+  while (remain > 0)//while there still remain content to write to file 
   {
     size_t x = write(logline + n, remain);
     if (x == 0)
@@ -60,12 +60,13 @@ void FileUtil::AppendFile::append(const char* logline, const size_t len)
 
 void FileUtil::AppendFile::flush()
 {
-  ::fflush(fp_);
+  ::fflush(fp_);//刷新缓冲区
 }
 
 size_t FileUtil::AppendFile::write(const char* logline, size_t len)
 {
   // #undef fwrite_unlocked
+  //write to file ,basic size of elem is 1 ,each elem have len byte content ,and the file pointer is fp,return the size that write to file
   return ::fwrite_unlocked(logline, 1, len, fp_);
 }
 
@@ -73,14 +74,14 @@ FileUtil::ReadSmallFile::ReadSmallFile(StringArg filename)
   : fd_(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)),
     err_(0)
 {
-  buf_[0] = '\0';
+  buf_[0] = '\0';//reset buffer 
   if (fd_ < 0)
   {
     err_ = errno;
   }
 }
 
-FileUtil::ReadSmallFile::~ReadSmallFile()
+FileUtil::ReadSmallFile::~ReadSmallFile()// destructor 
 {
   if (fd_ >= 0)
   {
@@ -111,6 +112,7 @@ int FileUtil::ReadSmallFile::readToString(int maxSize,
         if (S_ISREG(statbuf.st_mode))
         {
           *fileSize = statbuf.st_size;
+          //reset content size to hold file content, the max size is limit to maxSize
           content->reserve(static_cast<int>(std::min(implicit_cast<int64_t>(maxSize), *fileSize)));
         }
         else if (S_ISDIR(statbuf.st_mode))
@@ -131,7 +133,7 @@ int FileUtil::ReadSmallFile::readToString(int maxSize,
         err = errno;
       }
     }
-
+    //while content size less than maxSize
     while (content->size() < implicit_cast<size_t>(maxSize))
     {
       size_t toRead = std::min(implicit_cast<size_t>(maxSize) - content->size(), sizeof(buf_));
@@ -149,6 +151,7 @@ int FileUtil::ReadSmallFile::readToString(int maxSize,
         break;
       }
     }
+    //read file content to buf_ done!
   }
   return err;
 }
