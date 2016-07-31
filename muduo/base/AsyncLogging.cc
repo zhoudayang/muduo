@@ -35,17 +35,20 @@ void AsyncLogging::append(const char* logline, int len)
   }
   else
   {
+    //将currentBuffer_加入等待写入文件的已经填满的缓冲
     buffers_.push_back(currentBuffer_.release());
 
     if (nextBuffer_)
     {
+      //move nextBuffer_ to currentBuffer_
       currentBuffer_ = boost::ptr_container::move(nextBuffer_);
     }
-    else
+    else// next Buffer is empty
     {
       currentBuffer_.reset(new Buffer); // Rarely happens
     }
     currentBuffer_->append(logline, len);
+    //通知后端程序将缓冲中的log写入硬盘
     cond_.notify();
   }
 }
@@ -71,12 +74,16 @@ void AsyncLogging::threadFunc()
       muduo::MutexLockGuard lock(mutex_);
       if (buffers_.empty())  // unusual usage!
       {
+        //wait for log information
         cond_.waitForSeconds(flushInterval_);
       }
+      //push currentBuiffer_ to end of the vector
       buffers_.push_back(currentBuffer_.release());
+      //swap currentBuffer and newBuffer1
       currentBuffer_ = boost::ptr_container::move(newBuffer1);
+      //swap buffer vector
       buffersToWrite.swap(buffers_);
-      if (!nextBuffer_)
+      if (!nextBuffer_)// if nextBuffer is empty ,swap nextBuffer with newBuffer2
       {
         nextBuffer_ = boost::ptr_container::move(newBuffer2);
       }
@@ -92,6 +99,7 @@ void AsyncLogging::threadFunc()
                buffersToWrite.size()-2);
       fputs(buf, stderr);
       output.append(buf, static_cast<int>(strlen(buf)));
+      //删除bufferToWrite begin+2 -> end范围的buffer
       buffersToWrite.erase(buffersToWrite.begin()+2, buffersToWrite.end());
     }
 
@@ -107,14 +115,14 @@ void AsyncLogging::threadFunc()
       buffersToWrite.resize(2);
     }
 
-    if (!newBuffer1)
+    if (!newBuffer1)//get buffer content for newBuffer1
     {
       assert(!buffersToWrite.empty());
       newBuffer1 = buffersToWrite.pop_back();
       newBuffer1->reset();
     }
 
-    if (!newBuffer2)
+    if (!newBuffer2)//get buffer content for newBuffer2
     {
       assert(!buffersToWrite.empty());
       newBuffer2 = buffersToWrite.pop_back();
