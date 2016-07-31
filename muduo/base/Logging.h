@@ -32,6 +32,7 @@ class Logger
       : data_(arr),
         size_(N-1)
     {
+     //strrchr() 函数（在php中）查找字符在指定字符串中从左面开始的最后一次出现的位置，如果成功，返回该字符以及其后面的字符，如果失败，则返回 NULL。
       const char* slash = strrchr(data_, '/'); // builtin function
       if (slash)
       {
@@ -116,6 +117,7 @@ inline Logger::LogLevel Logger::logLevel()
 //   else
 //     logWarnStream << "Bad news";
 //
+//c++预定义宏 __FILE__ 程序源文件 __LINE__ 程序代码行号  __func__ 该行代码所在的函数名称 
 #define LOG_TRACE if (muduo::Logger::logLevel() <= muduo::Logger::TRACE) \
   muduo::Logger(__FILE__, __LINE__, muduo::Logger::TRACE, __func__).stream()
 #define LOG_DEBUG if (muduo::Logger::logLevel() <= muduo::Logger::DEBUG) \
