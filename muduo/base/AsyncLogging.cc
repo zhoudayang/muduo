@@ -64,7 +64,7 @@ void AsyncLogging::threadFunc()
   newBuffer2->bzero();
   BufferVector buffersToWrite;
   buffersToWrite.reserve(16);
-  while (running_)
+  while (running_)//loop forever 将前端缓冲区的内容写入文件
   {
     assert(newBuffer1 && newBuffer1->length() == 0);
     assert(newBuffer2 && newBuffer2->length() == 0);
@@ -112,7 +112,7 @@ void AsyncLogging::threadFunc()
     if (buffersToWrite.size() > 2)
     {
       // drop non-bzero-ed buffers, avoid trashing
-      buffersToWrite.resize(2);
+      buffersToWrite.resize(2);//resize buffersToWriteto size 2,because newBuffer1 and newBuffer2 may need two buffer size
     }
 
     if (!newBuffer1)//get buffer content for newBuffer1
