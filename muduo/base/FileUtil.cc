@@ -21,11 +21,12 @@
 using namespace muduo;
 
 FileUtil::AppendFile::AppendFile(StringArg filename)
-  : fp_(::fopen(filename.c_str(), "ae")),  // 'e' for O_CLOEXEC
+  : fp_(::fopen(filename.c_str(), "ae")),  // 'e' for O_CLOEXEC 
+  // 调用open函数O_CLOEXEC模式打开的文件描述符在执行exec调用新程序中关闭，且为原子操作。
     writtenBytes_(0)
 {
   assert(fp_);
-  ::setbuffer(fp_, buffer_, sizeof buffer_);
+  ::setbuffer(fp_, buffer_, sizeof buffer_); //set buffer
   // posix_fadvise POSIX_FADV_DONTNEED ?
 }
 
