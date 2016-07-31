@@ -90,7 +90,7 @@ void AsyncLogging::threadFunc()
     }
 
     assert(!buffersToWrite.empty());
-
+    //超出后端处理能力，丢弃多余的日志buffer
     if (buffersToWrite.size() > 25)
     {
       char buf[256];
