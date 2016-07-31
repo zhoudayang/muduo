@@ -57,9 +57,9 @@ class AsyncLogging : boost::noncopyable
 
   void threadFunc();
 
-  typedef muduo::detail::FixedBuffer<muduo::detail::kLargeBuffer> Buffer;
-  typedef boost::ptr_vector<Buffer> BufferVector;
-  typedef BufferVector::auto_type BufferPtr;
+  typedef muduo::detail::FixedBuffer<muduo::detail::kLargeBuffer> Buffer;// fixed size buffer 
+  typedef boost::ptr_vector<Buffer> BufferVector; // ptr_vector hold Buffer
+  typedef BufferVector::auto_type BufferPtr; //类似c++11中的unique_ptr,具有移动语义，而且能够自动管理对象的生命周期
 
   const int flushInterval_;
   bool running_;
@@ -69,9 +69,9 @@ class AsyncLogging : boost::noncopyable
   muduo::CountDownLatch latch_;
   muduo::MutexLock mutex_;
   muduo::Condition cond_;
-  BufferPtr currentBuffer_;
-  BufferPtr nextBuffer_;
-  BufferVector buffers_;
+  BufferPtr currentBuffer_; //当前缓冲
+  BufferPtr nextBuffer_;//预备缓冲
+  BufferVector buffers_;//等待写入文件的已经填满的缓冲
 };
 
 }
