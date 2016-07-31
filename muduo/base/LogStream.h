@@ -19,12 +19,14 @@ namespace detail
 const int kSmallBuffer = 4000;
 const int kLargeBuffer = 4000*1000;
 
+
+//buffer with fixed size 
 template<int SIZE>
 class FixedBuffer : boost::noncopyable
 {
  public:
   FixedBuffer()
-  //使用char数组的头指针初始化cur_
+  //使用char数组的头指针初始化cur_ ,cur_是一个指向当前位置的指针
     : cur_(data_)
   {
    //设置函数指针
@@ -46,26 +48,33 @@ class FixedBuffer : boost::noncopyable
       cur_ += len;
     }
   }
-
+  //return data_
   const char* data() const { return data_; }
+  //return length of the data 
   int length() const { return static_cast<int>(cur_ - data_); }
 
   // write to data_ directly
   char* current() { return cur_; }
+  // return available capacity
   int avail() const { return static_cast<int>(end() - cur_); }
+  // push cur_ forward len position
   void add(size_t len) { cur_ += len; }
-
+  //reset cur_ to head 
   void reset() { cur_ = data_; }
+  //bzero() 会将内存块（字符串）的前n个字节清零
   void bzero() { ::bzero(data_, sizeof data_); }
 
   // for used by GDB
   const char* debugString();
+  // set fuction pointer 
   void setCookie(void (*cookie)()) { cookie_ = cookie; }
   // for used by unit test
   string toString() const { return string(data_, length()); }
+  // convert char * to StringPiece
   StringPiece toStringPiece() const { return StringPiece(data_, length()); }
 
  private:
+ //return end pointer of the data_
   const char* end() const { return data_ + sizeof data_; }
   // Must be outline function for cookies.
   static void cookieStart();
@@ -82,8 +91,9 @@ class LogStream : boost::noncopyable
 {
   typedef LogStream self;
  public:
+  //buffer with small size 
   typedef detail::FixedBuffer<detail::kSmallBuffer> Buffer;
-
+  // buffer with << function and bool parameter
   self& operator<<(bool v)
   {
     buffer_.append(v ? "1" : "0", 1);
@@ -109,6 +119,7 @@ class LogStream : boost::noncopyable
   self& operator<<(double);
   // self& operator<<(long double);
 
+// append v to buffer 
   self& operator<<(char v)
   {
     buffer_.append(&v, 1);
@@ -117,7 +128,7 @@ class LogStream : boost::noncopyable
 
   // self& operator<<(signed char);
   // self& operator<<(unsigned char);
-
+  // if str is nullptr ,appen null six times, else append str 
   self& operator<<(const char* str)
   {
     if (str)
@@ -130,12 +141,12 @@ class LogStream : boost::noncopyable
     }
     return *this;
   }
-
+  // use const char * << function
   self& operator<<(const unsigned char* str)
   {
     return operator<<(reinterpret_cast<const char*>(str));
   }
-
+  // append v to buffer 
   self& operator<<(const string& v)
   {
     buffer_.append(v.c_str(), v.size());
@@ -171,7 +182,7 @@ class LogStream : boost::noncopyable
 
   template<typename T>
   void formatInteger(T);
-
+  //fixed buffer 
   Buffer buffer_;
  // 最大数字长度
   static const int kMaxNumericSize = 32;
@@ -183,15 +194,16 @@ class Fmt // : boost::noncopyable
  public:
   template<typename T>
   Fmt(const char* fmt, T val);
-
+  //return buf_
   const char* data() const { return buf_; }
+  //return length of the buf_ (the same mean is the length of number)
   int length() const { return length_; }
 
  private:
   char buf_[32];
   int length_;
 };
-
+// append fmt.data() to buffer 
 inline LogStream& operator<<(LogStream& s, const Fmt& fmt)
 {
   s.append(fmt.data(), fmt.length());
