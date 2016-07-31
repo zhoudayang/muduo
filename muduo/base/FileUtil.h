@@ -39,17 +39,21 @@ class ReadSmallFile : boost::noncopyable
   // return errno
   int readToBuffer(int* size);
 
+  //return buffer
   const char* buffer() const { return buf_; }
-
+  
+  
+  // the max buffer size 
   static const int kBufferSize = 64*1024;
 
  private:
-  int fd_;
-  int err_;
-  char buf_[kBufferSize];
+  int fd_; // file descriptor
+  int err_; // init as 0 
+  char buf_[kBufferSize]; // buffer here 
 };
 
 // read the file content, returns errno if error happens.
+// store the file content to * content ,the maxsize is limit to maxSize
 template<typename String>
 int readFile(StringArg filename,
              int maxSize,
