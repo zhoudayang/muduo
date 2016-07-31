@@ -50,6 +50,7 @@ size_t convert(char buf[], T value)
     *p++ = '-';
   }
   *p = '\0';
+  // reverse between [buf,p),so '\0' is still the last element
   std::reverse(buf, p);
   //返回字符串的长度
   return p - buf;
@@ -114,7 +115,7 @@ void LogStream::formatInteger(T v)
     buffer_.add(len);
   }
 }
-
+// use int function to meet short parameter
 LogStream& LogStream::operator<<(short v)
 {
   *this << static_cast<int>(v);
@@ -162,7 +163,7 @@ LogStream& LogStream::operator<<(unsigned long long v)
   formatInteger(v);
   return *this;
 }
-
+// pointer address 
 LogStream& LogStream::operator<<(const void* p)
 {
   uintptr_t v = reinterpret_cast<uintptr_t>(p);
