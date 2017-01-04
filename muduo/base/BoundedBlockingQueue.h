@@ -74,7 +74,6 @@ class BoundedBlockingQueue : boost::noncopyable
 
   size_t capacity() const
   {
-    MutexLockGuard lock(mutex_);
     return queue_.capacity();
   }
 
